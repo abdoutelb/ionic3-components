@@ -225,7 +225,26 @@ export class ChartsPage {
 
     let options = {
       circumference: Math.PI,
-      rotation: 1.0 * Math.PI
+      rotation: 1.0 * Math.PI,
+      animation: {
+        onComplete: function () {
+          var ctx = this.chart.ctx;
+          ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'bottom';
+
+          this.data.datasets.forEach(function (dataset) {
+            for (var i = 0; i < dataset.data.length; i++) {
+              var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                left = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._view.x;
+              var total = Object.keys(dataset._meta).map(x => dataset._meta[x])[0].total
+              ctx.fillStyle = '#444'; // label color
+              var label = "Total:" + total;
+              ctx.fillText(label, left, model.y + 8);
+            }
+          });
+        }
+      }
     }
 
     return this.getChart(this.halfDoughnutCanvas.nativeElement, "doughnut", data, options);
